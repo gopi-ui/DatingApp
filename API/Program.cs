@@ -1,7 +1,14 @@
+using System.Text;
+using API;
 using API.Data;
+using API.Extensions;
+using API.Interfaces;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +19,14 @@ builder.Services.AddControllers();
 // builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DataContext>(opt => {
-opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
-var app = builder.Build();
+// builder.Services.AddDbContext<DataContext>(opt =>
+// {
+//     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+// });
+
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
@@ -24,13 +34,35 @@ var app = builder.Build();
 //     app.UseSwagger();
 //     app.UseSwaggerUI();
 // }
-builder.Services.AddCors();
+
+
+//builder.Services.AddCors();
+//builder.Services.AddScoped<ITokenService, TokenService>();
+
+
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//   .AddJwtBearer(options =>
+//   {
+//       options.TokenValidationParameters = new TokenValidationParameters
+//       {
+//           ValidateIssuerSigningKey = true,
+//           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
+//           ValidateIssuer = false,
+//           ValidateAudience = false
+//       };
+//   });
+
+
+
+
+var app = builder.Build();
 
 // configure the http request pipeline.
 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
+app.UseAuthentication(); // this added after jwt token validation
 app.UseAuthorization();
 
 app.MapControllers();
