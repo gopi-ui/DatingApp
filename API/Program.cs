@@ -1,14 +1,16 @@
-using System.Text;
+// using System.Text;
+// using API;
+// using API.Data;
 using API;
-using API.Data;
 using API.Extensions;
-using API.Interfaces;
-using API.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using API.Middleware;
+// using API.Interfaces;
+// using API.Services;
+// using Microsoft.AspNetCore.Authentication.JwtBearer;
+// using Microsoft.AspNetCore.Builder;
+// using Microsoft.EntityFrameworkCore;
+// using Microsoft.Extensions.DependencyInjection;
+// using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
+
+
 
 // builder.Services.AddDbContext<DataContext>(opt =>
 // {
@@ -56,6 +60,14 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 
 var app = builder.Build();
+
+//eroor handler in .net 5
+
+// if(builder.Environemt.IsDevelopment())
+// {
+//     app.UseDeveloperExceptionPage();
+// }
+app.UseMiddleware<ExceptionMiddleware>();
 
 // configure the http request pipeline.
 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
